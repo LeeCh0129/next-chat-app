@@ -1,14 +1,16 @@
 "use client";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+
 import axios from "axios";
-import toast from "react-hot-toast";
-import Input from "@/components/inputs/Input";
-import Button from "@/components/Button";
-import AuthSocialButton from "./AuthSocialButton";
+import { signIn, useSession } from "next-auth/react";
+import { useCallback, useEffect, useState } from "react";
 import { BsGithub, BsGoogle } from "react-icons/bs";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+
+import Input from "@/components/inputs/Input";
+import AuthSocialButton from "./AuthSocialButton";
+import Button from "@/components/Button";
+import { toast } from "react-hot-toast";
 
 type Variant = "LOGIN" | "REGISTER";
 
@@ -24,13 +26,13 @@ const AuthForm = () => {
     }
   }, [session?.status, router]);
 
-  const toggleVariant = () => {
+  const toggleVariant = useCallback(() => {
     if (variant === "LOGIN") {
       setVariant("REGISTER");
     } else {
       setVariant("LOGIN");
     }
-  };
+  }, [variant]);
 
   const {
     register,
@@ -58,15 +60,17 @@ const AuthForm = () => {
         )
         .then((callback) => {
           if (callback?.error) {
-            toast.error("Invalid credentials");
+            toast.error("Invalid credentials!");
           }
+
           if (callback?.ok) {
             router.push("/conversations");
           }
         })
-        .catch(() => toast.error("에러가 발생했습니다."))
+        .catch(() => toast.error("Something went wrong!"))
         .finally(() => setIsLoading(false));
     }
+
     if (variant === "LOGIN") {
       signIn("credentials", {
         ...data,
@@ -74,8 +78,9 @@ const AuthForm = () => {
       })
         .then((callback) => {
           if (callback?.error) {
-            toast.error("Invalid credentials");
+            toast.error("Invalid credentials!");
           }
+
           if (callback?.ok) {
             router.push("/conversations");
           }
@@ -90,8 +95,9 @@ const AuthForm = () => {
     signIn(action, { redirect: false })
       .then((callback) => {
         if (callback?.error) {
-          toast.error("Invalid credentials");
+          toast.error("Invalid credentials!");
         }
+
         if (callback?.ok) {
           router.push("/conversations");
         }
@@ -100,9 +106,9 @@ const AuthForm = () => {
   };
 
   return (
-    <div className={`mt-8 sm:mx-auto sm:w-full sm:max-w-md`}>
-      <div className={`px-4 py-8 bg-white shadow sm:rounded-lg ms:px-10`}>
-        <form className="space-y-6">
+    <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           {variant === "REGISTER" && (
             <Input
               disabled={isLoading}
@@ -140,11 +146,11 @@ const AuthForm = () => {
 
         <div className="mt-6">
           <div className="relative">
-            <div className={`absolute inset-0 flex items-center`}>
-              <div className={`w-full border-t border-gray-300`} />
+            <div className="absolute inset-0 flex items-center ">
+              <div className="w-full border-t border-gray-300" />
             </div>
-            <div className={`relative flex justify-center text-sm`}>
-              <span className={`px-2 text-gray-500 bg-white`}>소셜 로그인</span>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 text-gray-500 bg-white">소셜 로그인</span>
             </div>
           </div>
 
@@ -158,17 +164,15 @@ const AuthForm = () => {
               onClick={() => socialAction("google")}
             />
           </div>
-          <div
-            className={`flex justify-center gap-2 px-2 mt-6 text-sm text-gray-500`}
-          >
-            <div>
-              {variant === "LOGIN"
-                ? "메신저를 처음 사용 하시나요"
-                : "이미 계정이 있나요?"}
-            </div>
-            <div className={`underline cursor-pointer`}>
-              {variant === "LOGIN" ? "계정 만들기" : "로그인하기"}
-            </div>
+        </div>
+        <div className="flex justify-center gap-2 px-2 mt-6 text-sm text-gray-500 ">
+          <div>
+            {variant === "LOGIN"
+              ? "메신저를 처음 사용하시나요?"
+              : "이미 계정이 있나요?"}
+          </div>
+          <div onClick={toggleVariant} className="underline cursor-pointer">
+            {variant === "LOGIN" ? "계정 만들기" : "로그인하기"}
           </div>
         </div>
       </div>
