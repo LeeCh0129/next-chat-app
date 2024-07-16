@@ -75,7 +75,7 @@ const DesktopSidebar = ({ currentUser }: DesktopSidebarProps) => {
         `}
           onClick={() => setIsOpen(true)}
         >
-          <Avatar />
+          <Avatar user={currentUser} />
         </div>
       </nav>
     </div>
