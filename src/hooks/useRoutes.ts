@@ -1,3 +1,4 @@
+"use client";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import React from "react";
