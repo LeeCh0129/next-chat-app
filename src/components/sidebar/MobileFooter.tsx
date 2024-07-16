@@ -32,7 +32,7 @@ const MobileFooter = () => {
           key={route.href}
           href={route.href}
           active={route.active}
-          iocn={route.icon}
+          icon={route.icon}
           onClick={route.onClick}
         />
       ))}
