@@ -4,7 +4,7 @@ import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ClipLoader } from "react-spinners";
 
-const LoadingModal = () => {
+const page = () => {
   return (
     <Transition.Root show as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={() => {}}>
@@ -18,7 +18,7 @@ const LoadingModal = () => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 transition-opacity bg-gray-100 bg-opacity-50 " />
+          <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-50 " />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -44,4 +44,4 @@ const LoadingModal = () => {
   );
 };
 
-export default LoadingModal;
+export default page;
