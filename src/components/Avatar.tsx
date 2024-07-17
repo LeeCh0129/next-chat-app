@@ -30,17 +30,7 @@ const Avatar = ({ user }: AvatarProps) => {
 
       <span
         className={`
-        absolute
-        block
-        rounded-full
-        bg-green-500
-        ring-2
-        ring-whit
-        top-0
-        h-2
-        w-2
-        md:h-3
-        md:w-3
+        absolute top-0 right-0 block w-2 h-2 bg-green-500 rounded-full ring-2 ring-white md:h-3 md:w-3
         `}
       />
     </div>
