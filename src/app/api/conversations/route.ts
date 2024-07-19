@@ -1,15 +1,52 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { NextResponse } from "next/server";
+
 import prisma from "@/libs/prismadb";
+import { pusherServer } from "@/libs/pusher";
 
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     const body = await request.json();
-    const { userId } = body;
+    const { userId, isGroup, members, name } = body;
 
-    if (!currentUser?.id || !currentUser.email) {
-      return new NextResponse("Unauthorize", { status: 400 });
+    if (!currentUser?.id || !currentUser?.email) {
+      return new NextResponse("Unauthorized", { status: 400 });
+    }
+
+    if (isGroup && (!members || members.length < 2 || !name)) {
+      return new NextResponse("Invalid data", { status: 400 });
+    }
+
+    if (isGroup) {
+      const newConversation = await prisma.conversation.create({
+        data: {
+          name,
+          isGroup,
+          users: {
+            connect: [
+              ...members.map((member: { value: string }) => ({
+                id: member.value,
+              })),
+              {
+                id: currentUser.id,
+              },
+            ],
+          },
+        },
+        include: {
+          users: true,
+        },
+      });
+
+      // Update all connections with new conversation
+      newConversation.users.forEach((user) => {
+        if (user.email) {
+          pusherServer.trigger(user.email, "conversation:new", newConversation);
+        }
+      });
+
+      return NextResponse.json(newConversation);
     }
 
     const existingConversations = await prisma.conversation.findMany({
@@ -22,7 +59,7 @@ export async function POST(request: Request) {
           },
           {
             userIds: {
-              equals: [userId, currentUser],
+              equals: [userId, currentUser.id],
             },
           },
         ],
@@ -51,6 +88,15 @@ export async function POST(request: Request) {
       include: {
         users: true,
       },
+    });
+
+    console.log(newConversation);
+
+    // Update all connections with new conversation
+    newConversation.users.map((user) => {
+      if (user.email) {
+        pusherServer.trigger(user.email, "conversation:new", newConversation);
+      }
     });
 
     return NextResponse.json(newConversation);
