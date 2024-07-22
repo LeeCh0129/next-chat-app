@@ -60,7 +60,6 @@ const ConversationList: React.FC<ConversationListProps> = ({
           />
         ))}
       </div>
-      <ConversationBox />
     </aside>
   );
 };
