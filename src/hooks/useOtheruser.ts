@@ -1,3 +1,4 @@
+"use client";
 import { FullConversationType } from "@/types";
 import { User } from "@prisma/client";
 import { useSession } from "next-auth/react";
