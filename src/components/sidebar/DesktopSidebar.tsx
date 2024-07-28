@@ -20,6 +20,7 @@ const DesktopSidebar = ({ currentUser }: DesktopSidebarProps) => {
     lg:inset-y-0
     lg:left-0
     lg:z-40
+    lg:w-20
     xl:px-6
     lg:overflow-y-auto
     lg:bg-orange-400
