@@ -17,7 +17,7 @@ const MessageInput = ({
   type,
   required,
   register,
-}: MessagingOptions) => {
+}: MessageInputProps) => {
   return (
     <div className="relative w-full">
       <input
