@@ -8,6 +8,8 @@ import clsx from "clsx";
 import useConversation from "@/hooks/useConversation";
 import ConversationBox from "./ConversationBox";
 import { FullConversationType } from "@/types";
+import { useSession } from "next-auth/react";
+import { pusherClient } from "@/libs/pusher";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
@@ -22,6 +24,36 @@ const ConversationList: React.FC<ConversationListProps> = ({
   const [items, setItems] = useState(initialItems);
   const { conversationId, isOpen } = useConversation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const session = useSession();
+
+  const pusherKey = session.data?.user?.email;
+
+  useEffect(() => {
+    if (!pusherKey) {
+      return;
+    }
+    pusherClient.subscribe(pusherKey);
+
+    const updateHandler = (conversation: FullConversationType) => {
+      setItems((current) =>
+        current.map((currentConversation) => {
+          if (currentConversation.id === conversation.id) {
+            return {
+              ...currentConversation,
+              messages: conversation.messages,
+            };
+          }
+          return currentConversation;
+        })
+      );
+    };
+
+    pusherClient.bind("conversation:update", updateHandler);
+    return () => {
+      pusherClient.unsubscribe(pusherKey);
+      pusherClient.unbind("conversation:update", updateHandler);
+    };
+  }, [pusherKey]);
 
   return (
     <aside
