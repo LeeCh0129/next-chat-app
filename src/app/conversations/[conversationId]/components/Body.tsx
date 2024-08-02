@@ -6,8 +6,12 @@ import { FullMessageType } from "@/types";
 import React, { useEffect, useRef, useState } from "react";
 import MessageBox from "./MessageBox";
 
-const Body = () => {
-  const [messages, setMessages] = useState<FullMessageType>([]);
+interface BodyProps {
+  initialMessages: FullMessageType[];
+}
+
+const Body = ({ initialMessages }: BodyProps) => {
+  const [messages, setMessages] = useState<FullMessageType[]>(initialMessages);
   const { conversationId } = useConversation();
   const bottomRef = useRef<HTMLDivElement>(null);
 
