@@ -42,6 +42,16 @@ export async function DELETE(
       },
     });
 
+    existingConversation.users.forEach((user) => {
+      if (user.email) {
+        pusherServer.trigger(
+          user.email,
+          "conversation:remove",
+          existingConversation
+        );
+      }
+    });
+
     return NextResponse.json(deletedConversation);
   } catch (error) {
     return NextResponse.json(null);

@@ -66,18 +66,6 @@ export async function POST(request: Request) {
       },
     });
 
-    newConversation.users.map((user) => {
-      if (user.email) {
-        pusherServer.trigger(user.email, "conversation:new", newConversation);
-      }
-    });
-
-    const singleConversation = existingConversations[0];
-
-    if (singleConversation) {
-      return NextResponse.json(singleConversation);
-    }
-
     const newConversation = await prisma.conversation.create({
       data: {
         users: {
@@ -104,6 +92,18 @@ export async function POST(request: Request) {
         pusherServer.trigger(user.email, "conversation:new", newConversation);
       }
     });
+
+    newConversation.users.map((user) => {
+      if (user.email) {
+        pusherServer.trigger(user.email, "conversation:new", newConversation);
+      }
+    });
+
+    const singleConversation = existingConversations[0];
+
+    if (singleConversation) {
+      return NextResponse.json(singleConversation);
+    }
 
     return NextResponse.json(newConversation);
   } catch (error) {

@@ -10,6 +10,7 @@ import ConversationBox from "./ConversationBox";
 import { FullConversationType } from "@/types";
 import { useSession } from "next-auth/react";
 import { pusherClient } from "@/libs/pusher";
+import find from "lodash/find";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
@@ -57,12 +58,20 @@ const ConversationList: React.FC<ConversationListProps> = ({
       });
     };
 
+    const removeHandler = (conversation: FullConversationType) => {
+      setItems((current) => {
+        return [...current.filter((item) => item.id !== conversation.id)];
+      });
+    };
+
     pusherClient.bind("conversation:update", updateHandler);
     pusherClient.bind("conversation:new", newHandler);
+    pusherClient.bind("conversation:remove", removeHandler);
     return () => {
       pusherClient.unsubscribe(pusherKey);
       pusherClient.unbind("conversation:update", updateHandler);
       pusherClient.unbind("conversation:new", newHandler);
+      pusherClient.unbind("conversation:remove", removeHandler);
     };
   }, [pusherKey]);
 
