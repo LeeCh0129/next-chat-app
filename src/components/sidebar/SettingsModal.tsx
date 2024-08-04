@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import Modal from "../modals/Modal";
 
 interface SettingsModalProps {
   isOpen?: boolean;
@@ -16,7 +17,6 @@ const SettingsModal = ({
   onClose,
   currentUser,
 }: SettingsModalProps) => {
-
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -25,35 +25,33 @@ const SettingsModal = ({
     handleSubmit,
     setValue,
     watch,
-    formState: {errors}
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
       name: currentUser?.name,
-      image: currentUser?.image
-    }
-  })
+      image: currentUser?.image,
+    },
+  });
 
-  const image = watch('image');
+  const image = watch("image");
 
   const handleUpload = (result: any) => {
-    setValue('image', result.info.secure_url. {
-      shouldValidate: true
-    })
-  }
+    setValue("image", result.info.secure_url, {
+      shouldValidate: true,
+    });
+  };
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
     axios
-    .post("/api/settings", data)
-    .then(()=> {
-      router.refresh();
-      onClose();
-    })
-    .catch(()=> toast.error('에러가 났습니다.'))
-    .finally(()=> setIsLoading(false));
-  }
-
-
+      .post("/api/settings", data)
+      .then(() => {
+        router.refresh();
+        onClose();
+      })
+      .catch(() => toast.error("에러가 났습니다."))
+      .finally(() => setIsLoading(false));
+  };
 
   return <div>SettingsModal</div>;
 };
