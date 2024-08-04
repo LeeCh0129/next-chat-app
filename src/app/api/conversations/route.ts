@@ -66,6 +66,12 @@ export async function POST(request: Request) {
       },
     });
 
+    newConversation.users.map((user) => {
+      if (user.email) {
+        pusherServer.trigger(user.email, "conversation:new", newConversation);
+      }
+    });
+
     const singleConversation = existingConversations[0];
 
     if (singleConversation) {

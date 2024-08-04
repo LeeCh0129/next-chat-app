@@ -48,10 +48,21 @@ const ConversationList: React.FC<ConversationListProps> = ({
       );
     };
 
+    const newHandler = (conversation: FullConversationType) => {
+      setItems((current) => {
+        if (find(current, { id: conversation.id })) {
+          return current;
+        }
+        return [conversation, ...current];
+      });
+    };
+
     pusherClient.bind("conversation:update", updateHandler);
+    pusherClient.bind("conversation:new", newHandler);
     return () => {
       pusherClient.unsubscribe(pusherKey);
       pusherClient.unbind("conversation:update", updateHandler);
+      pusherClient.unbind("conversation:new", newHandler);
     };
   }, [pusherKey]);
 
