@@ -80,7 +80,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
     <>
       <GroupChatModal
         users={users}
-        isOpen={isOpen}
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
       <aside
